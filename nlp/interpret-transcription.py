@@ -1,8 +1,8 @@
-import os
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from orchestrator import core
 import glob
 from datetime import datetime
-
-from core import run_inference
 
 TRANSCRIPTIONS_DIR = "data/raw/transcriptions"
 INTERPRETATIONS_DIR = "data/processed/interpretations"
@@ -23,6 +23,10 @@ def save_interpretation(output, transcription_file):
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(output)
     return output_file
+
+def run_inference(transcription):
+    # Assuming the new package exposes a similar interface
+    return core.run_inference(transcription)
 
 def main():
     try:
