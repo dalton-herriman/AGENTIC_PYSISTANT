@@ -1,0 +1,40 @@
+import os
+import glob
+from datetime import datetime
+
+from core import run_inference  # Assuming this function exists in core.py
+
+TRANSCRIPTS_DIR = "data/raw/transcriptions"
+INTERPRETATIONS_DIR = "data/processed/interpretations"
+
+def get_latest_transcript_file(directory):
+    files = glob.glob(os.path.join(directory, "*.txt"))
+    if not files:
+        raise FileNotFoundError("No transcript files found.")
+    files_with_times = [(f, os.path.getmtime(f)) for f in files]
+    latest_file = max(files_with_times, key=lambda x: x[1])[0]
+    return latest_file
+
+def save_interpretation(output, transcript_file):
+    os.makedirs(INTERPRETATIONS_DIR, exist_ok=True)
+    base_name = os.path.splitext(os.path.basename(transcript_file))[0]
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(INTERPRETATIONS_DIR, f"{base_name}_interpretation_{timestamp}.txt")
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(output)
+    return output_file
+
+def main():
+    try:
+        latest_file = get_latest_transcript_file(TRANSCRIPTS_DIR)
+        with open(latest_file, "r", encoding="utf-8") as f:
+            transcript = f.read()
+        inference_result = run_inference(transcript)
+        output_file = save_interpretation(inference_result, latest_file)
+        print(f"Latest transcript file: {latest_file}")
+        print(f"Interpretation saved to: {output_file}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()

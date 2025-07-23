@@ -1,7 +1,5 @@
 # Data that the program generates
-data/raw/*
-data/raw/recordings/*
-
+data/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
