@@ -4,7 +4,9 @@ from transformers.pipelines import pipeline
 # Path to recordings
 import os
 
-recordings_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data/raw/recordings/*.wav"))
+recordings_path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../data/raw/recordings/*.wav")
+)
 
 # Find the first file
 files = glob.glob(recordings_path)
@@ -34,10 +36,14 @@ print("Transcript:")
 print(transcript)
 
 # Save transcript to file
-transcriptions_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data/raw/transcriptions"))
+transcriptions_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../data/raw/transcriptions")
+)
 os.makedirs(transcriptions_dir, exist_ok=True)
 recording_basename = os.path.splitext(os.path.basename(first_file))[0]
-transcription_file = os.path.join(transcriptions_dir, f"{recording_basename}_transcription.txt")
+transcription_file = os.path.join(
+    transcriptions_dir, f"{recording_basename}_transcription.txt"
+)
 with open(transcription_file, "w", encoding="utf-8") as f:
     f.write(transcript)
 print(f"Transcript saved to: {transcription_file}")
