@@ -2,7 +2,9 @@ import glob
 from transformers.pipelines import pipeline
 
 # Path to recordings
-recordings_path = "/data/raw/recordings/microphone_*.wav"
+import os
+
+recordings_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data/raw/recordings/*.wav"))
 
 # Find the first file
 files = glob.glob(recordings_path)
@@ -13,19 +15,29 @@ if not files:
 
 first_file = files[0]
 
-# Load ASR pipeline from Hugging Face
+# Load ASR pipeline from Hugging Face (English only)
 asr = pipeline("automatic-speech-recognition", model="openai/whisper-base")
 
 # Analyze the first recording
 print(f"Analyzing: {first_file}")
 result = asr(first_file)
-print("Transcript:")
 if isinstance(result, str):
-    print(result)
+    transcript = result
 elif isinstance(result, dict):
-    print(result.get("text", result))
+    transcript = result.get("text", str(result))
 elif isinstance(result, list):
-    for item in result:
-        print(item.get("text", item))
+    transcript = "\n".join([item.get("text", str(item)) for item in result])
 else:
-    print(result)
+    transcript = str(result)
+
+print("Transcript:")
+print(transcript)
+
+# Save transcript to file
+transcriptions_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data/raw/transcriptions"))
+os.makedirs(transcriptions_dir, exist_ok=True)
+recording_basename = os.path.splitext(os.path.basename(first_file))[0]
+transcription_file = os.path.join(transcriptions_dir, f"{recording_basename}_transcription.txt")
+with open(transcription_file, "w", encoding="utf-8") as f:
+    f.write(transcript)
+print(f"Transcript saved to: {transcription_file}")
